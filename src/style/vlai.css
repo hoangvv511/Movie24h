@@ -1,0 +1,101 @@
+
+/* New player messbox */
+
+.watching-messbox-overlay {
+    position: fixed;
+    z-index: 999997;
+    background-color: rgba(0, 0, 0, 0.7);
+    width: 100%;
+    height: 100%;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    top: 0;
+    left: 0;
+    box-sizing: border-box;
+}
+
+.watching-messbox-wrapper {
+    left: 50%;
+    top: 50px;
+    margin-left: -300px;
+    width: 600px;
+    display: block;
+    position: fixed;
+    border: 8px solid rgba(0, 0, 0, 0.5);
+    z-index: 999998;
+    background-color: #FFF;
+    color: #000;
+    box-sizing: border-box;
+    max-width: 94%;
+    /*max-height: 94%;*/
+}
+
+.watching-messbox-header {
+    display: block;
+    border-bottom: solid 1px #CCC;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.watching-messbox-body {
+    display: block;
+    padding: 10px;
+    overflow: auto;
+}
+
+.watching-messbox-body>span {
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+.watching-messbox-body>span:last-child {
+    margin-bottom: 0px;
+}
+
+.watching-messbox-footer {
+    display: block;
+    border-top: solid 1px #CCC;
+    padding: 10px;
+}
+
+.watching-messbox-footer:after {
+    display: block;
+    content: " ";
+    height: 0;
+    line-height: 0;
+    overflow: hidden;
+    clear: both;
+}
+
+.watching-messbox-read-label {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+.watching-messbox-button, .watching-messbox-close {
+    display: inline-block;
+    float: right;
+    border-radius: 3px;
+    background-color: #474949;
+    padding: 5px 10px;
+    color: #FFF;
+    touch-action: manipulation;
+    cursor: pointer;
+    border: none;
+    margin-left: 5px;
+}
+
+.watching-messbox-button:hover, .watching-messbox-close:hover {
+    background-color: rgba(0, 0, 0, 0.95);
+}
+
+.watching-messbox-button:after, .watching-messbox-close:after {
+    display: block;
+    content: " ";
+    line-height: 0;
+    overflow: hidden;
+    height: 0;
+    max-height: 0;
+}

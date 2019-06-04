@@ -1,0 +1,217 @@
+import React from 'react';
+import '../style/chunk.css';
+import '../style/static.css';
+import Slider from 'react-slick'
+import { Link } from "react-router-dom";
+import FilmAPI from '../services/filmApi'
+import Film from '../models/film'
+import _ from 'lodash';
+import genreType, { genre } from '../navigator/genre';
+
+export default class FilmDetail extends React.Component {
+
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            currentID: '',
+            currentFilm: new Film()
+        }
+    }
+
+    componentWillMount = async () => {
+        const filmData = await FilmAPI.getFilmByID(this.props.match.params.movieID)
+        await this.setState({ currentFilm: this.addFilmDetail(filmData), currentID: this.props.match.params.movieID })
+        console.log(this.state.currentFilm)
+    }
+
+    addFilmDetail = (filmData) => {
+        return new Film(
+            filmData.Id,
+            filmData.Subtitle,
+            filmData.Name,
+            filmData.Linkplay,
+            filmData.Thumnail,
+            filmData.Banner,
+            filmData.Content,
+            filmData.Time,
+            filmData.Type,
+            filmData.Country,
+            filmData.Writer,
+            filmData.Directors,
+            filmData.Date,
+            filmData.Imbd,
+            filmData.Imgtrailer,
+            filmData.Linktrailer,
+            filmData.Subviet,
+            filmData.Subeng,
+            filmData.Cast
+        )
+    }
+
+    renderGenres = (genres: String) => {
+        var genresArr = genres.split(',')
+
+        return genresArr.reduce((renderResult, genre, index, originGenres) => {
+            renderResult.push(
+                <a class="button is-link is-small is-rounded is-inverted is-outlined" href="#">{genre.trim()}</a>
+            )
+            return renderResult
+        }, [])
+    }
+
+    renderCast = (cast: Object) => {
+        let castArr = []
+
+        Object.keys(cast).forEach(key => {
+            castArr.push(
+                <div>
+                    <div className="item" tabIndex={-1} style={{ width: '100%', display: 'inline-block' }}>
+                        <a className="image" href="#">
+                            <figure>
+                                <img src={`${cast[key].Avatar}`} alt={`${cast[key].CastName}`} />
+                            </figure>
+                        </a>
+                        <p>
+                            <a className="name" href="#">{`${cast[key].CastName}`}</a>
+                        </p>
+                        <p className="character">{`${cast[key].CharacterName}`}</p>
+                    </div>
+                </div>
+            )
+        });
+        return castArr
+    }
+
+    render() {
+        const { currentFilm: { id, nameVi, nameEng, url, thumnail, banner, content, time, genres, country, writers, directors, date, imbd, trailerImg, trailerUrl, subVi, subEng, cast } } = this.state
+
+        return (
+            <div>
+                <div className="backdrop" style={{ backgroundImage: `url(${banner})` }} />
+                <section className="section">
+                    <div className="container shiftup">
+                        <div className="tt-details columns is-variable is-8">
+                            <div className="column is-one-quarter-tablet">
+                                <p className="has-text-centered">
+                                    <img src={`${thumnail}`} />
+                                </p>
+                                <Link className="watch button is-danger is-medium is-fullwidth" to={`/watch/${id}`}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                        <path d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z" />
+                                    </svg> Xem phim
+                                </Link>
+                            </div>
+                            <div className="column main">
+                                <h1 className="title is-2">{nameEng}</h1>
+                                <h2 className="subtitle is-4">{nameVi}</h2>
+                                <div className="meta">
+                                    <span>{time}</span>
+                                    <span className="tag is-dark has-text-weight-bold">PG-13</span>
+                                </div>
+                                <div className="meta">
+                                    <span className="imdb-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                                            <path d="M44 13H4c-2.2 0-4 1.8-4 4v16c0 2.2 1.8 4 4 4h40c2.2 0 4-1.8 4-4V17c0-2.2-1.8-4-4-4z" fill="#ffc107" />
+                                            <path d="M28.102 18h-3.704v13.102h3.704c2 0 2.796-.403 3.296-.704.602-.398.903-1.097.903-1.796v-7.903c0-.898-.403-1.699-.903-2-.796-.5-1.097-.699-3.296-.699zm.699 10.3c0 .598-.7.598-1.301.598V20c.602 0 1.3 0 1.3.602zM33.8 18v13.3h2.802s.199-.902.398-.698c.398 0 1.5.597 2.2.597.698 0 1.1 0 1.5-.199.6-.398.698-.7.698-1.3v-7.802c0-1.097-1.097-1.796-2-1.796-.898 0-1.796.597-2.199.898v-3zm3.598 4.2c0-.4 0-.598.403-.598.199 0 .398.199.398.597v6.602c0 .398 0 .597-.398.597-.2 0-.403-.199-.403-.597zM22.7 31.3V18h-4.4l-.8 6.3-1.102-6.3h-4v13.3h2.903v-7.402l1.3 7.403h2l1.297-7.403v7.403zM7.602 18h3.097v13.3H7.602z" fill="#263238" />
+                                        </svg>
+                                    </span>
+                                    <span className="has-text-weight-bold">{imbd}</span>
+                                </div>
+                                <div className="level genres">
+                                    <div className="level-left">
+                                        <div className="level-item">
+                                            <a href={`https://www.facebook.com/sharer/sharer.php?u=http://localhost:3000/movie/${id}`} className="fb-share button is-link" target="_blank">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                                    <path d="M448 80v352c0 26.5-21.5 48-48 48h-85.3V302.8h60.6l8.7-67.6h-69.3V192c0-19.6 5.4-32.9 33.5-32.9H384V98.7c-6.2-.8-27.4-2.7-52.2-2.7-51.6 0-87 31.5-87 89.4v49.9H184v67.6h60.9V480H48c-26.5 0-48-21.5-48-48V80c0-26.5 21.5-48 48-48h352c26.5 0 48 21.5 48 48z" />
+                                                </svg> Chia sẻ</a>
+                                        </div>
+                                    </div>
+                                    <div className="level-right">
+                                        <div className="level-item buttons">
+                                            {this.renderGenres(genres)}
+                                        </div>
+                                    </div>
+                                </div>
+                                <dl className="horizontal-dl">
+                                    {
+                                        directors.length &&
+                                        <div>
+                                            <dt>Đạo diễn</dt>
+                                            <dd className="csv">
+                                                <a href="#">{directors}</a>
+                                            </dd>
+                                        </div>
+                                    } {
+                                        writers.length &&
+                                        <div>
+                                            <dt>Kịch bản</dt>
+                                            <dd className="csv">
+                                                <a href="#">{writers}</a>
+                                            </dd>
+                                        </div>
+                                    } {
+                                        country.length &&
+                                        <div>
+                                            <dt>Quốc gia</dt>
+                                            <dd className="csv">
+                                                <a href="#">{country}</a>
+                                            </dd>
+                                        </div>
+                                    } {
+                                        date.length &&
+                                        <div>
+                                            <dt>Khởi chiếu</dt>
+                                            <dd>{date}</dd>
+                                        </div>
+                                    }
+                                </dl>
+                                <div className="intro has-text-grey-light">{content}</div>
+                                <h3 className="section-header">Diễn viên</h3>
+                                <div className="cast" style={{ visibility: _.isEmpty(cast) ? 'hidden' : 'visible' }}>
+                                    <Slider
+                                        arrows={true}
+                                        infinite={false}
+                                        slidesToShow={Object.keys(cast).length > 6 ? 6 : 5}
+                                        slidesToScroll={2}
+                                        prevArrow={
+                                            <div className="slick-arrow slick-prev" style={{ display: 'block' }} >
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                                    <path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" />
+                                                </svg>
+                                            </div>
+                                        }
+                                        nextArrow={
+                                            <div className="slick-arrow slick-next" style={{ display: 'block' }}>
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                                                    <path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z" />
+                                                </svg>
+                                            </div>
+                                        }
+                                    >
+                                        {this.renderCast(cast)}
+                                    </Slider>
+                                </div>
+
+                                <h3 className="section-header">Trailer</h3>
+
+                                <div className="trailers" style={{ visibility: _.isEmpty(trailerUrl) ? 'hidden' : 'visible', width: 300, height: 200 }}>
+                                    <div role='button' className="item" tabIndex={-1} style={{ width: '100%', display: 'inline-block' }}>
+                                        <div onClick={() => window.open(`${trailerUrl}`)} className="clip">
+                                            <img src={`${trailerImg}`} />
+                                            <div className="icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                                    <path d="M424.4 214.7L72.4 6.6C43.8-10.3 0 6.1 0 47.9V464c0 37.5 40.7 60.1 72.4 41.3l352-208c31.4-18.5 31.5-64.1 0-82.6z" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        );
+    }
+};
