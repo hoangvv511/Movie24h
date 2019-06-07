@@ -1,10 +1,12 @@
 import React from 'react';
 import '../style/chunk.css';
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
+import { connect } from 'react-redux'
 import { genre } from '../navigator/genre';
 import { country } from '../navigator/country';
 import { withRouter } from 'react-router-dom';
-import FilmAPI from '../services/filmApi'
+import _ from 'lodash';
+import FilmAPI from '../services/filmApi';
 
 class Header extends React.Component {
 
@@ -13,7 +15,7 @@ class Header extends React.Component {
 
         this.state = {
             navName: "navbar is-fixed-top",
-            value: ''
+            value: '',
         }
     }
 
@@ -32,11 +34,30 @@ class Header extends React.Component {
         window.removeEventListener('scroll', this.handleScroll);
     }
 
-    changeSearchValue = text => {
-        this.setState({ value: text })
+    changeSearchValue = event => {
+        const { value } = event.target;
+        this.setState({ value: value });
+    }
+
+    showSearchValue = () => {
+        const name = this.state.value
+        window.location.replace(`/?search=${name.trim().replace(/ /g, '-')}`);
+    }
+
+    _handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            this.showSearchValue()
+        }
+    }
+
+    logout = () => {
+        localStorage.setItem('user', '')
+        window.location.reload()
     }
 
     render() {
+        const user = localStorage.getItem('user').length > 0 ? JSON.parse( localStorage.getItem('user')) : {}
+
         return (
             <nav className={this.state.navName} role="navigation" aria-label="main navigation" onScroll={this.handleScroll}>
                 <div className="navbar-brand">
@@ -78,18 +99,13 @@ class Header extends React.Component {
                                         <div className="css-1g6gooi">
                                             <div style={{ display: 'inline-block' }}>
                                                 <input
-                                                    autoCapitalize="none"
-                                                    autoComplete="off"
-                                                    autoCorrect="off"
                                                     id="react-select-2-input"
-                                                    spellCheck="false"
-                                                    tabIndex={0}
-                                                    type="text"
+                                                    onKeyDown={this._handleKeyDown}
                                                     onSubmit={() => this.showSearchValue()}
                                                     style={{ backgroundColor: 'transparent', color: 'white', borderColor: 'transparent', borderWidth: 0, outline: 'none' }}
                                                     placeholder="Nhập tên phim..."
                                                     value={this.state.searchValue}
-                                                    onChange={(text) => this.changeSearchValue(text)} />
+                                                    onChange={this.changeSearchValue} />
                                                 <div style={{ position: 'absolute', top: '0px', left: '0px', visibility: 'hidden', height: '0px', overflow: 'scroll', whiteSpace: 'pre', fontSize: '16px', fontFamily: 'BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif', fontWeight: 400, fontStyle: 'normal', letterSpacing: 'normal', textTransform: 'none' }} />
                                             </div>
                                         </div>
@@ -106,9 +122,22 @@ class Header extends React.Component {
                         </div>
                     </div>
                     <div className="navbar-end">
-                        <div className="navbar-item">
-                            <a className="button is-primary" rel="nofollow" href="/login">Đăng nhập</a>
-                        </div>
+                        {
+                            _.isEmpty(user) ?
+                                <div className="navbar-item">
+                                    <a className="button is-primary" rel="nofollow" href="/login">Đăng nhập</a>
+                                </div> :
+                                <div className="navbar-item has-dropdown is-hoverable">
+                                    <a className="navbar-link">
+                                        <span className="full-name">{user.Name}</span>
+                                        <div className="initial-avatar">V</div>
+                                    </a>
+                                    <div className="navbar-dropdown is-right">
+                                        <Link className="navbar-item" to={`/favorite/${user.Username}`}>Phim của tôi</Link>
+                                        <a className="navbar-item" onClick={() => this.logout()}>Thoát</a>
+                                    </div>
+                                </div>
+                        }
                     </div>
                 </div>
             </nav>
@@ -116,4 +145,10 @@ class Header extends React.Component {
     }
 };
 
-export default withRouter(Header)
+const mapStateToProps = state => {
+    return {
+        user: state.user,
+    };
+}
+
+export default connect(mapStateToProps)(withRouter(Header))

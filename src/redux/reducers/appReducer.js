@@ -1,7 +1,7 @@
-import { CAN_SHOW_MESS, START_RESUME } from '../actions/type'
+import { CAN_SHOW_MESS, START_RESUME, SAVE_USER } from '../actions/type'
 
 const initialState = {
-    user: null,
+    user: undefined,
     timeResume: 0,
     canShowMessage: false,
     acceptResume: false
@@ -18,7 +18,14 @@ const AppReducer = (state = initialState, action) => {
         }
         case START_RESUME: {
             return {
+                ...state,
                 acceptResume: action.canStart
+            }
+        }
+        case SAVE_USER: {
+            return {
+                ...state,
+                user: action.user
             }
         }
         default:

@@ -1,7 +1,7 @@
 import React from 'react';
 import '../style/chunk.css';
 import { Link } from "react-router-dom";
-import PropTypes from 'prop-types'
+import PropTypes, { string } from 'prop-types'
 import ReactPaginate from 'react-paginate';
 import FilmAPI from '../services/filmApi'
 import Pagination from 'rc-pagination';
@@ -17,25 +17,30 @@ export default class Films extends React.Component {
         this.state = {
             data: [],
             option: "Id",
+            maxFilm: -1,
             maxPage: -1,
-            currentType: '',
+            currentType: 'none',
             currentTypeID: '',
+            searchName: '',
             currentPage: -1,
         }
     }
 
     componentWillMount = async () => {
+        const search = this.props.location.search
         const type = this.props.match.params
-        const currentType = this.getTypeFilm(type)
-        const currentTypeID = currentType === 'none' ? '' : currentType === 'country' ? type.countryID : type.genreID
-        await this.updateFilm(currentType, currentTypeID, 1, this.state.option)
+        const currentType = this.getTypeFilm(type, search)
+        const currentTypeID = currentType === 'none' || currentType === 'search' ? '' : currentType === 'country' ? type.countryID : type.genreID
+        await this.updateFilm(currentType, currentTypeID, 1, this.state.option, search.substr(8))
         this.getFilmStatus()
     }
 
-    getTypeFilm = (type) => {
-        if (_.isEmpty(type)) {
+    getTypeFilm = (type, search = '') => {
+        if (_.isEmpty(type) && search.length) {
+            return 'search'
+        } else if (_.isEmpty(type) && !search.length) {
             return 'none'
-        } else if (type.countryID == undefined) {
+        } else if (type.countryID == undefined && !search.length) {
             return 'genre'
         } else {
             return 'country'
@@ -57,13 +62,16 @@ export default class Films extends React.Component {
         }
     }
 
-    updateFilm = async (type, typeId, page, option) => {
+    updateFilm = async (type, typeId, page, option, name = '') => {
         let data = []
         let maxFilm = -1
 
         if (type === 'none') {
             data = await FilmAPI.getAllFilm(page, option)
             maxFilm = await FilmAPI.getCountAllFilm()
+        } else if (type === 'search') {
+            data = await FilmAPI.getFilmByName(name, page, option)
+            maxFilm = await FilmAPI.getCountFilmByName(name)
         } else if (type === 'country') {
             data = await FilmAPI.getFilmByCountry(typeId, page, option)
             maxFilm = await FilmAPI.getCountFilmByCountry(typeId)
@@ -74,11 +82,13 @@ export default class Films extends React.Component {
 
         await this.setState({
             data: data,
+            maxFilm: maxFilm,
             maxPage: Math.round(maxFilm / 15),
             currentPage: page,
             currentType: type,
             currentTypeID: typeId,
-            option: option
+            option: option,
+            searchName: name
         })
     }
 
@@ -92,7 +102,6 @@ export default class Films extends React.Component {
     }
 
     renderFilm = (listFilm: Array) => {
-
         return listFilm.map((film, index) => {
             return (
                 <div className="column is-one-fifth-fullhd is-one-quarter-desktop is-one-third-tablet is-half-mobile">
@@ -120,18 +129,32 @@ export default class Films extends React.Component {
         let data = []
         const nextPage = page.selected + 1
 
-        await this.updateFilm(this.state.currentType, this.state.currentTypeID, nextPage, this.state.option)
+        await this.updateFilm(this.state.currentType, this.state.currentTypeID, nextPage, this.state.option, this.state.searchName)
     }
 
     buildPageLocation = (pageNumber) => {
         return `/?page=${pageNumber}`
     }
 
+    renderTitle = (currentType) => {
+        if (currentType !== 'none') {
+            if (currentType === 'country') {
+                return <h1 class="title is-3">{`Phim ${country.find(item => { return item.href === this.props.match.url.toString() }).value}`}</h1>
+            } else if (currentType === 'genre') {
+                return <h1 class="title is-3">{`Phim ${genre.find(item => { return item.href === this.props.match.url.toString() }).value}`}</h1>
+            } else {
+                return <h1 class="title is-3">{`Tìm thấy ${this.state.maxFilm} kết quả`}</h1>
+            }
+        }
+    }
+
     render() {
+        const { currentType } = this.state
         return (
             <section className="section">
                 <div className="container">
                     <div className="title-list">
+                        {this.renderTitle(currentType)}
                         <div className="field is-horizontal filters">
                             <div className="field-label is-small">
                                 <label className="label">Sắp xếp theo:</label>

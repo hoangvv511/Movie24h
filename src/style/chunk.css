@@ -224,6 +224,12 @@
     font-weight: normal;
     font-style: normal;
 }
+.heart-button {
+    fill: red;
+    position: relative;
+    top: 5px;
+    width: 50px;
+}
 .vjs-icon-hd:before {
     content: "\F114";
 }
@@ -3951,6 +3957,12 @@ fieldset[disabled] .button.is-primary.is-inverted.is-outlined {
     border-color: transparent;
     color: #fff;
 }
+.button.is-link-heart {
+    background-color: #FF0040;
+    border-color: transparent;
+    color: #fff;
+}
+
 .button.is-link:hover,
 .button.is-link.is-hovered {
     background-color: #276cda;
@@ -11797,6 +11809,17 @@ main.has-navbar-fixed-top {
     background-color: #3273dced;
 }
 .fb-share svg {
+    height: 1.3em;
+    fill: white;
+    margin-right: .9em;
+}
+.heart-share {
+    background-color: #DF013A;
+}
+.heart-share:hover {
+    background-color: #FF0040;
+}
+.heart-share svg {
     height: 1.3em;
     fill: white;
     margin-right: .9em;

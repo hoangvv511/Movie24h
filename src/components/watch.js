@@ -3,7 +3,7 @@ import '../style/chunk.css';
 import VideoPlayer from '../components/videoPlayer';
 import FilmAPI from '../services/filmApi'
 import Film from '../models/film'
-import ContentNotLogin from '../components/contentNotLogin';
+import ContentWatch from '../components/contentWatch';
 
 class Watch extends React.Component {
 
@@ -56,7 +56,7 @@ class Watch extends React.Component {
                 <div className>
                     <div className="title-watch">
                         <VideoPlayer videoID={id} url={url} banner={banner} subEng={subEng} subVi={subVi} />
-                        <ContentNotLogin videoID={id} nameVi={nameVi} nameEng={nameEng} />
+                        <ContentWatch videoID={id} nameVi={nameVi} nameEng={nameEng} />
                     </div>
                 </div>
             </section>

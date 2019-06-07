@@ -16,7 +16,7 @@ export default class FilmAPI {
     }
 
     static getFilmByID = (id) => {
-        return axios.get(`${originUrl}/GetFilmById?Id=${id}`).then(res => res.data)
+        return axios.get(`${originUrl}/GetFilmById?id=${id}`).then(res => res.data)
     }
 
     static getFilmByCountry = (countryID, page, sortType) => {
@@ -27,16 +27,24 @@ export default class FilmAPI {
         return axios.get(`${originUrl}/GetFilmByType?type=${genreID}&page=${page}&sort=${sortType}`).then(res => res.data)
     }
 
+    static getFilmByName = (name, page, sortType) => {
+        return axios.get(`${originUrl}/GetFilmByName?name=${name}&page=${page}&sort=${sortType}`).then(res => res.data)
+    }
+
     static getCountAllFilm = () => {
-        return axios.get(`${originUrl}/GetCountAllFilm`).then(res => res.data)
+        return axios.get(`${originUrl}/GetCountFilm`).then(res => res.data)
+    }
+
+    static getCountFilmByName = (name) => {
+        return axios.get(`${originUrl}/GetCountFilm?name=${name}`).then(res => res.data)
     }
 
     static getCountFilmByCountry = (countryID) => {
-        return axios.get(`${originUrl}/GetCountFilmByCountry?country=${countryID}`).then(res => res.data)
+        return axios.get(`${originUrl}/GetCountFilm?country=${countryID}`).then(res => res.data)
     }
 
     static getCountFilmByGenre = (genreID) => {
-        return axios.get(`${originUrl}/GetCountFilmByType?type=${genreID}`).then(res => res.data)
+        return axios.get(`${originUrl}/GetCountFilm?type=${genreID}`).then(res => res.data)
     }
 
     static getFilmUrl = (url) => {

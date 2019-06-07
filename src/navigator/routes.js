@@ -18,6 +18,11 @@ const routes = [
         main: ({ match, location }) => <Films match={match} location={location} />
     },
     {
+        path: '/?search=:name',
+        exact: true,
+        main: ({ match, location }) => <Films match={match} location={location} />
+    },
+    {
         path: '/country/:countryID',
         exact: true,
         main: ({ match, location }) => <Films match={match} location={location} />

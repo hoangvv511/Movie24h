@@ -1,4 +1,4 @@
-import { START_RESUME, CAN_SHOW_MESS } from '../actions/type'
+import { START_RESUME, CAN_SHOW_MESS, SAVE_USER } from '../actions/type'
 
 export const startResume = (canStart) => {
     return {
@@ -14,4 +14,13 @@ export const canShowMess = (isShow, time) => {
         time
     }
 }
+
+export const saveUser = user => {
+    return {
+        type: SAVE_USER,
+        user
+    }
+}
+
+
 
