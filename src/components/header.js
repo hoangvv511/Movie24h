@@ -133,7 +133,7 @@ class Header extends React.Component {
                                         <div className="initial-avatar">V</div>
                                     </a>
                                     <div className="navbar-dropdown is-right">
-                                        <Link className="navbar-item" to={`/favorite/${user.Username}`}>Phim của tôi</Link>
+                                        <Link className="navbar-item" to={`/myfavorite/${user.Username}`}>Phim của tôi</Link>
                                         <a className="navbar-item" onClick={() => this.logout()}>Thoát</a>
                                     </div>
                                 </div>

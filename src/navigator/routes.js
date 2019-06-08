@@ -5,6 +5,7 @@ import Login from '../components/loginForm';
 import Signup from '../components/signupForm';
 import Detail from '../components/filmDetail';
 import Watch from '../components/watch';
+import FavoriteFilms from '../components/favoriteFilms';
 
 const routes = [
     {
@@ -31,6 +32,11 @@ const routes = [
         path: '/genre/:genreID',
         exact: true,
         main: ({ match, location }) => <Films match={match} location={location} />
+    },
+    {
+        path: '/myfavorite/:username',
+        exact: true,
+        main: ({ match, location }) => <FavoriteFilms match={match} location={location} />
     },
     {
         path: '/signup',

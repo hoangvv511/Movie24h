@@ -44,7 +44,8 @@ class Watch extends React.Component {
             filmData.Linktrailer,
             filmData.Subviet,
             filmData.Subeng,
-            filmData.Cast
+            filmData.Cast,
+            filmData.Comment
         )
     }
 

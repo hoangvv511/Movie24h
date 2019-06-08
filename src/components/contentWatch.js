@@ -1,6 +1,9 @@
 import React from 'react';
 import '../style/chunk.css';
 import _ from 'lodash'
+import FilmAPI from '../services/filmApi';
+import moment from 'moment'
+import 'moment/locale/vi';
 
 const sampleComment = [
     {
@@ -29,29 +32,71 @@ class ContentWatch extends React.Component {
             nameVi: '',
             nameEng: '',
             id: -1,
+            comments: []
         }
         this.playerId = 'player'
     }
 
     componentWillReceiveProps = async (nextProps) => {
         if (nextProps.nameVi.length) {
-            await this.setState({ nameVi: nextProps.nameVi, nameEng: nextProps.nameEng, id: nextProps.videoID })
+            await this.setState({
+                nameVi: nextProps.nameVi,
+                nameEng: nextProps.nameEng,
+                id: nextProps.videoID,
+                comments: await FilmAPI.getAllComment(nextProps.videoID)
+            })
         }
     }
 
-    renderComment = (arrComment: Array) => {
+    renderComment = (id, arrComment: Array, user) => {
         return arrComment.reduce((renderResult, comment, index, originArrComment) => {
+            const timeComment = new Date(comment.Date)
+
             renderResult.push(
-                <div className="content"><strong>{comment.name}</strong> &nbsp; <small className="has-text-grey">{comment.time.toString()}</small>
-                    <div className="comment">{comment.content}</div>
-                </div>
+                <article className="media">
+                    <div className="media-content">
+                        <div className="content"><strong>{comment.Name}</strong> &nbsp;
+                        <small className="has-text-grey">{moment(timeComment).lang('vi').fromNow()}</small>
+                            <div className="comment">{comment.Content}</div>
+                        </div>
+                    </div>
+                    {
+                        user.Name === comment.Name &&
+                        <div className="media-right">
+                            <button onClick={() => this.removeComment(id, comment.Id)} className="delete" />
+                        </div>
+                    }
+                </article>
             )
             return renderResult
         }, [])
     }
 
+    addNewComment = async (id, user, value) => {
+        const result = await FilmAPI.addNewComment(id, user.Name, value, new Date().toLocaleString())
+        if (!_.isEmpty(result)) {
+            this.updateComments()
+        }
+    }
+
+    updateComments = async () => {
+        this.setState({ comments: await FilmAPI.getAllComment(this.state.id), value: '' })
+    }
+
+    removeComment = async (id, commentId) => {
+        const result = await FilmAPI.removeComment(id, commentId)
+        if (!_.isEmpty(result)) {
+            this.updateComments()
+        }
+    }
+
+    handleInputChange = (event) => {
+        const { value } = event.target;
+        this.setState({ value: value })
+    }
+
     render() {
-        const { nameVi, nameEng, id } = this.state
+        const { nameVi, nameEng, id, comments, value } = this.state
         const user = localStorage.getItem('user').length > 0 ? JSON.parse(localStorage.getItem('user')) : {}
 
         return (
@@ -85,24 +130,27 @@ class ContentWatch extends React.Component {
                             !_.isEmpty(user) &&
                             <form>
                                 <div className="field">
-                                    <textarea className="textarea" rows={2} placeholder="Nhập bình luận..." required name="content" defaultValue={""} />
+                                    <textarea
+                                        className="textarea"
+                                        rows={2}
+                                        placeholder="Nhập bình luận..."
+                                        required
+                                        value={value}
+                                        onChange={(event) => this.handleInputChange(event)}
+                                        name="content"
+                                        defaultValue={""} />
                                 </div>
                                 <div className="has-text-right">
-                                    <button type="submit" className="button is-inverted is-primary is-outlined is-small">Gửi</button>
+                                    <button onClick={() => this.addNewComment(id, user, value)} type="button" className="button is-inverted is-primary is-outlined is-small">Gửi</button>
                                 </div>
                             </form>
                         }
-                        <article className="media">
-                            <div className="media-content">
-                                {this.renderComment(sampleComment)}
-                            </div>
-                        </article>
+                        {this.renderComment(id, comments, user)}
                     </div>
                 </div>
             </section>
         );
     }
 };
-
 
 export default ContentWatch

@@ -19,6 +19,7 @@ export default class Film {
         subVi: String,
         subEng: String,
         cast: Object,
+        comment: Array
     ) {
         this.id = id || -1
         this.nameVi = nameVi || ''
@@ -39,5 +40,6 @@ export default class Film {
         this.subVi = subVi || ''
         this.subEng = subEng || ''
         this.cast = cast || {}
+        this.comment = comment || []
     }
 }
