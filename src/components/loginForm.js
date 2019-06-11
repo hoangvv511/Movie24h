@@ -29,6 +29,14 @@ class LoginForm extends React.Component {
         const { username, password } = this.state
         const user = localStorage.getItem('user')
 
+        if(username.length <= 0 ) {
+            alert("Tài khoản không được trống")
+            return
+        } else if(password.length <= 0){
+            alert("Bạn chưa nhập mật khẩu")
+            return
+        }
+
         const userData = await AuthApi.login(username, password)
         console.log(userData)
         if (userData.data.code === "200") {

@@ -73,6 +73,11 @@ class ContentWatch extends React.Component {
     }
 
     addNewComment = async (id, user, value) => {
+        if(value === ''){
+            alert("Bạn phải nhập bình luận")
+            return
+        }
+
         const result = await FilmAPI.addNewComment(id, user.Name, value, new Date().toLocaleString())
         if (!_.isEmpty(result)) {
             this.updateComments()

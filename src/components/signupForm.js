@@ -30,6 +30,23 @@ class SingupForm extends React.Component {
         const { username, name, password } = this.state
         const user = localStorage.getItem('user')
 
+        if (username.length < 6) {
+            alert('Tên tài khoản phải lớn hơn 6 kí tự')
+            return
+        } else if (password.length < 6) {
+            alert('Mật khẩu phải lớn hơn 6 kí tự')
+            return
+        } else if (!this.isValid(name)) {
+            alert('Tên không được chứa kí tự đặc biệt')
+            return
+        } else if (!this.isValid(username)) {
+            alert('Tên tài khoản không được chứa kí tự đặc biệt')
+            return
+        } else if (!this.isValid(password)) {
+            alert('Mật khẩu không được chứa kí tự đặc biệt')
+            return
+        }
+
         const userData = await AuthApi.register(username, name, password)
         if (userData.data.code === "200") {
             alert(userData.data.message)
@@ -39,6 +56,10 @@ class SingupForm extends React.Component {
             this.myFormRef.reset()
             this.props.history.push('/signup')
         }
+    }
+
+    isValid(str) {
+        return !/[~`!#$%\^&*+=\-\[\]\\';,/{}|\\":<>\?]/g.test(str);
     }
 
     render() {

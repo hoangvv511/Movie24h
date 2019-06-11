@@ -52,10 +52,14 @@ class Header extends React.Component {
 
     logout = () => {
         localStorage.setItem('user', '')
+        if(this.props.location.pathname.toString().indexOf("/myfavorite/") != -1){
+            this.props.history.push('/')
+        }
         window.location.reload()
     }
 
     render() {
+        console.log(this.props.location.pathname)
         const user = localStorage.getItem('user').length > 0 ? JSON.parse( localStorage.getItem('user')) : {}
 
         return (
